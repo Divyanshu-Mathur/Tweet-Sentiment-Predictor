@@ -9,7 +9,7 @@ from tensorflow.keras.models import load_model
 from sklearn.preprocessing import LabelEncoder
 import pickle
 
-model = load_model('model.h5',compile=False)
+model = load_model('model.h5',compile=True)
 model.summary()
 
 with open("tokenizer.pkl", "rb") as f:
@@ -28,14 +28,21 @@ def clean_text(text):
 # Streamlit UI
 st.title("Tweet Sentiment Predictor ")
 user_input = st.text_area("Enter a tweet to analyze its sentiment:")
+print("User:",user_input)
 
 if st.button("Predict"):
     cleaned = clean_text(user_input)
+    print("Cleaned:",clean_text)
     seq = tokenizer.texts_to_sequences([cleaned])
-    padded = pad_sequences(seq, maxlen=MAX_LEN)
+    print("Seq: ",seq)
+    if not seq or not seq[0]:
+        st.error("The input doesn't contain any recognizable words. Please try a valid sentence.")
+    else:
+        padded = pad_sequences(seq, maxlen=MAX_LEN)
+        print("Padded:",padded)
 
-    probs = model.predict(padded)
-    pred_idx = np.argmax(probs)
-    pred_label = label_enc.inverse_transform([pred_idx])[0]
+        probs = model.predict(padded)
+        pred_idx = np.argmax(probs)
+        pred_label = label_enc.inverse_transform([pred_idx])[0]
 
-    st.success(f"Predicted Sentiment: **{pred_label}**")
+        st.success(f"Predicted Sentiment: **{pred_label}**")
