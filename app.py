@@ -5,10 +5,12 @@ import pandas as pd
 import re
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.models import load_model
 from sklearn.preprocessing import LabelEncoder
 import pickle
 
-model = tf.keras.models.load_model("model.h5")
+model = load_model('model.h5',compile=False)
+model.summary()
 
 with open("tokenizer.pkl", "rb") as f:
     tokenizer = pickle.load(f)
